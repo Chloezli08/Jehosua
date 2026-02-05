@@ -1,498 +1,566 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🎮 Yehoshua Quiz — Für Kinder</title>
-<style>
-  :root{
-    --color-1: #FF6B6B;
-    --color-2: #4ECDC4;
-    --color-3: #FFE66D;
-    --color-4: #95E1D3;
-    --color-5: #FF8C42;
-    --color-6: #A8D8EA;
-    --text-dark: #2c3e50;
-    --shadow: 0 12px 40px rgba(0,0,0,0.15);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: 'Comic Sans MS', 'Trebuchet MS', cursive, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:16px;
-    color:var(--text-dark);
-  }
-  .wrap{ width:100%; max-width:900px; }
-  .card{
-    background: linear-gradient(180deg, #fff8f0 0%, #f0f9ff 100%);
-    border-radius:32px;
-    padding:28px;
-    box-shadow: var(--shadow), 0 0 60px rgba(255,107,107,0.2);
-    border: 4px solid rgba(255,107,107,0.1);
-    animation: popIn 0.5s ease-out;
-  }
-  @keyframes popIn{
-    0%{ transform:scale(0.95); opacity:0; }
-    100%{ transform:scale(1); opacity:1; }
-  }
-  header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:16px;
-    flex-wrap:wrap;
-    background: linear-gradient(90deg, var(--color-1), var(--color-5));
-    padding:20px;
-    border-radius:24px;
-    color:white;
-    box-shadow: 0 8px 20px rgba(255,107,107,0.3);
-  }
-  h1{
-    margin:0;
-    font-size:2rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    letter-spacing: 1px;
-  }
-  .top-right{
-    display:flex;
-    gap:10px;
-    align-items:center;
-    flex-wrap:wrap;
-  }
-  select{
-    padding:8px 12px;
-    border-radius:12px;
-    border:none;
-    font-size:0.95rem;
-    font-weight:700;
-    background:rgba(255,255,255,0.9);
-    cursor:pointer;
-  }
-  .btn{
-    background: linear-gradient(135deg, var(--color-2), var(--color-4));
-    color:white;
-    border:none;
-    padding:12px 18px;
-    border-radius:16px;
-    cursor:pointer;
-    font-weight:700;
-    font-size:0.95rem;
-    transition: transform 0.1s, box-shadow 0.2s;
-    box-shadow: 0 6px 16px rgba(78,205,196,0.3);
-    font-family: inherit;
-  }
-  .btn:hover{ transform:translateY(-2px); box-shadow: 0 10px 24px rgba(78,205,196,0.5); }
-  .btn:active{ transform:translateY(0); }
-  .btn.secondary{
-    background: linear-gradient(135deg, var(--color-3), var(--color-5));
-    box-shadow: 0 6px 16px rgba(255,230,109,0.3);
-  }
-  .btn.ghost{
-    background:rgba(255,255,255,0.8);
-    color:var(--text-dark);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  .meta{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    margin-top:16px;
-    flex-wrap:wrap;
-    background: linear-gradient(90deg, rgba(255,107,107,0.1), rgba(78,205,196,0.1));
-    padding:16px;
-    border-radius:20px;
-    font-weight:700;
-  }
-  .progress{ color:var(--text-dark); font-size:1.1rem; }
-  .score{
-    background: linear-gradient(135deg, #FFD93D, #FF8C42);
-    color:white;
-    padding:10px 16px;
-    border-radius:20px;
-    font-size:1.2rem;
-    box-shadow: 0 6px 16px rgba(255,140,66,0.4);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-  }
-  .timer{
-    font-size:1.3rem;
-    font-weight:700;
-    color:var(--color-5);
-    background:rgba(255,140,66,0.1);
-    padding:8px 14px;
-    border-radius:12px;
-    min-width:60px;
-    text-align:center;
-  }
-  main{ margin-top:24px; }
-  .question{
-    font-size:1.4rem;
-    font-weight:800;
-    margin-bottom:20px;
-    background: linear-gradient(135deg, var(--color-1), var(--color-5));
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    background-clip:text;
-    text-shadow: none;
-  }
-  .answers{
-    display:grid;
-    gap:14px;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    margin-bottom:16px;
-  }
-  .answer{
-    background: linear-gradient(135deg, #fff5e6, #fffacd);
-    border:3px solid rgba(255,140,66,0.2);
-    padding:16px;
-    border-radius:20px;
-    cursor:pointer;
-    text-align:center;
-    font-weight:700;
-    font-size:1rem;
-    transition: all 0.12s;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:8px;
-    font-family:inherit;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  .answer:hover{
-    transform:translateY(-4px);
-    box-shadow: 0 10px 24px rgba(255,140,66,0.25);
-    border-color:var(--color-5);
-  }
-  .answer:active{ transform:translateY(-2px); }
-  .answer.correct{
-    background: linear-gradient(135deg, #A8D8EA, #95E1D3);
-    border-color:var(--color-2);
-    box-shadow: 0 8px 20px rgba(78,205,196,0.4);
-    animation: bounceIn 0.5s;
-  }
-  .answer.wrong{
-    background: linear-gradient(135deg, #FFB3B3, #FF8888);
-    border-color:var(--color-1);
-    box-shadow: 0 8px 20px rgba(255,107,107,0.4);
-    animation: shake 0.4s;
-  }
-  @keyframes bounceIn{
-    0%{ transform:scale(1); }
-    50%{ transform:scale(1.08); }
-    100%{ transform:scale(1); }
-  }
-  @keyframes shake{
-    0%,100%{ transform:translateX(0); }
-    20%{ transform:translateX(-6px); }
-    40%{ transform:translateX(6px); }
-    60%{ transform:translateX(-6px); }
-    80%{ transform:translateX(6px); }
-  }
-  .feedback{
-    min-height:48px;
-    font-weight:700;
-    font-size:1.2rem;
-    text-align:center;
-    padding:12px;
-    border-radius:16px;
-    margin-top:12px;
-    animation: slideUp 0.3s;
-  }
-  @keyframes slideUp{
-    from{ opacity:0; transform:translateY(10px); }
-    to{ opacity:1; transform:translateY(0); }
-  }
-  .feedback.success{
-    background:linear-gradient(135deg, rgba(78,205,196,0.2), rgba(168,216,234,0.2));
-    color:var(--color-2);
-  }
-  .feedback.danger{
-    background:linear-gradient(135deg, rgba(255,107,107,0.2), rgba(255,140,66,0.2));
-    color:var(--color-1);
-  }
-  .footer{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    margin-top:20px;
-    flex-wrap:wrap;
-    padding:16px;
-    background:rgba(255,230,109,0.1);
-    border-radius:16px;
-  }
-  .hint{ color:var(--text-dark); font-size:0.9rem; font-weight:600; }
-  @media (max-width:600px){
-    h1{ font-size:1.4rem; }
-    .question{ font-size:1.15rem; }
-    .answers{ grid-template-columns:1fr; }
-    .card{ padding:16px; }
-    header{ padding:16px; }
-    .meta{ gap:10px; }
-  }
-  /* Modal */
-  .modal{
-    display:none;
-    position:fixed;
-    inset:0;
-    align-items:center;
-    justify-content:center;
-    background:rgba(0,0,0,0.5);
-    z-index:100;
-    padding:20px;
-  }
-  .modal.open{ display:flex; }
-  .modal-card{
-    background:linear-gradient(180deg, #fff8f0, #f0f9ff);
-    padding:28px;
-    border-radius:24px;
-    max-width:500px;
-    width:100%;
-    box-shadow: var(--shadow);
-    border:4px solid var(--color-2);
-    animation:popIn 0.3s;
-  }
-  .modal-card h3{ font-size:1.4rem; color:var(--color-1); margin-top:0; }
-  .modal-card input{
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:2px solid var(--color-2);
-    font-size:1rem;
-    margin:12px 0;
-    font-family:inherit;
-    font-weight:700;
-  }
-  .modal-card ol{
-    list-style-position:inside;
-    padding:0;
-  }
-  .modal-card li{
-    padding:10px;
-    margin:8px 0;
-    background:rgba(255,230,109,0.2);
-    border-radius:12px;
-    font-weight:700;
-  }
-  .modal-buttons{ display:flex; gap:10px; justify-content:flex-end; margin-top:16px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buch Josua Lernspiel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-item .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .score-item .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .start-screen, .question-screen, .result-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .answer-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 20px;
+            font-size: 1.1em;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            color: #333;
+        }
+
+        .answer-btn:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .answer-btn.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+            animation: celebrate 0.5s;
+        }
+
+        .answer-btn.wrong {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        .answer-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            display: none;
+            line-height: 1.6;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideIn 0.3s;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .feedback.wrong {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-screen h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .result-screen .final-score {
+            font-size: 3em;
+            color: #f5576c;
+            margin: 20px 0;
+        }
+
+        .result-screen .message {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" role="application" aria-labelledby="title">
-      <header>
-        <h1 id="title">🎮 Yehoshua Quiz 📜</h1>
-        <div class="top-right">
-          <label style="color:white; font-weight:700" for="lang">Sprache:</label>
-          <select id="lang">
-            <option value="de">🇩🇪 Deutsch</option>
-            <option value="en">🇬🇧 English</option>
-          </select>
-          <button id="restart" class="btn ghost">🔄 Neustart</button>
-          <button id="shuffle" class="btn secondary">🎲 Mischen</button>
+    <div class="game-container">
+        <div class="header">
+            <h1>🏺 Das Buch Josua Quiz 🏺</h1>
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="label">Punkte</div>
+                    <div class="value" id="score">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">Frage</div>
+                    <div class="value" id="question-number">0/20</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">Serie</div>
+                    <div class="value" id="streak">0🔥</div>
+                </div>
+            </div>
         </div>
-      </header>
 
-      <div class="meta">
-        <div class="progress" id="progress">📍 Frage 1/25</div>
-        <div class="score" id="score">⭐ 0</div>
-        <div style="flex:1"></div>
-        <div class="timer" id="timer">⏱️ 12s</div>
-      </div>
+        <div class="content">
+            <!-- Start Screen -->
+            <div class="start-screen" id="start-screen">
+                <div class="emoji">⚔️🌟📖</div>
+                <h2>Willkommen beim Buch Josua Quiz!</h2>
+                <p>
+                    Lerne über die spannenden Abenteuer von Josua!<br>
+                    Eroberungen, Wunder und Geschichten aus dem Buch Josua.<br>
+                    20 interessante Fragen warten auf dich!
+                </p>
+                <button class="btn" onclick="startGame()">🎮 Spiel starten!</button>
+            </div>
 
-      <main>
-        <div id="question" class="question" tabindex="0" aria-live="polite"></div>
-        <div id="answers" class="answers" role="list"></div>
-        <div id="feedback" class="feedback" aria-live="assertive"></div>
-      </main>
+            <!-- Question Screen -->
+            <div class="question-screen hidden" id="question-screen">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="question-text" id="question-text"></div>
+                <div class="answers" id="answers"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="btn hidden" id="next-btn" onclick="nextQuestion()">Nächste Frage ➡️</button>
+            </div>
 
-      <div class="footer">
-        <div class="hint">⌨️ Tastatur: 1-4 zum Wählen · ←/→ Navigation</div>
-        <div style="display:flex; gap:8px">
-          <button id="save" class="btn secondary">💾 Speichern</button>
-          <button id="show" class="btn secondary">🏆 Highscores</button>
+            <!-- Result Screen -->
+            <div class="result-screen hidden" id="result-screen">
+                <div class="emoji" id="result-emoji"></div>
+                <h2>Spiel beendet!</h2>
+                <div class="final-score" id="final-score"></div>
+                <div class="message" id="result-message"></div>
+                <button class="btn" onclick="startGame()">🔄 Nochmal spielen!</button>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Scores Modal -->
-  <div id="scores-modal" class="modal">
-    <div class="modal-card">
-      <h3>🏆 Highscores</h3>
-      <ol id="scores-list"></ol>
-      <div class="modal-buttons">
-        <button id="scores-close" class="btn ghost">Schließen</button>
-      </div>
-    </div>
-  </div>
+    <script>
+        const questions = [
+            {
+                question: "Wer war der Anführer von Israel vor Josua?",
+                answers: ["Moses", "Aaron", "Abraham", "König David"],
+                correct: 0,
+                explanation: "Richtig! Moses war der Anführer vor Josua. Moses ernannte Josua vor seinem Tod zum Nachfolger."
+            },
+            {
+                question: "Welchen Fluss überquerten die Israeliten beim Einzug ins Land Kanaan?",
+                answers: ["Euphrat", "Jordan", "Nil", "Tigris"],
+                correct: 1,
+                explanation: "Richtig! Die Israeliten überquerten den Jordan auf wundersame Weise - das Wasser stand wie eine Mauer!"
+            },
+            {
+                question: "Wie oft umrundeten die Israeliten Jericho am siebten Tag?",
+                answers: ["Einmal", "Dreimal", "Siebenmal", "Zehnmal"],
+                correct: 2,
+                explanation: "Richtig! Am siebten Tag umrundeten sie die Stadt siebenmal, dann fielen die Mauern!"
+            },
+            {
+                question: "Was geschah mit den Mauern von Jericho?",
+                answers: ["Sie wurden verbrannt", "Sie fielen von selbst", "Sie wurden mit Schwertern zerstört", "Sie stürzten bei einem Erdbeben ein"],
+                correct: 1,
+                explanation: "Richtig! Die Mauern fielen durch Gottes Wunder, nachdem das Volk die Schofar-Hörner blies und schrie!"
+            },
+            {
+                question: "Welches Instrument benutzten die Israeliten bei der Belagerung von Jericho?",
+                answers: ["Trommeln", "Harfen", "Schofar-Hörner", "Trompeten"],
+                correct: 2,
+                explanation: "Richtig! Sie benutzten Schofar-Hörner! Sieben Priester bliesen die Jobeljahr-Hörner."
+            },
+            {
+                question: "Wie hieß die Frau, die den Spähern in Jericho half?",
+                answers: ["Rahab", "Ruth", "Debora", "Sarah"],
+                correct: 0,
+                explanation: "Richtig! Rahab versteckte die Spione und half ihnen zu entkommen. Sie schloss sich dem Volk Israel an."
+            },
+            {
+                question: "Wie viele Spione schickte Josua nach Jericho?",
+                answers: ["Zwei", "Drei", "Zwölf", "Sieben"],
+                correct: 0,
+                explanation: "Richtig! Josua schickte zwei Spione, im Gegensatz zu Moses, der zwölf schickte."
+            },
+            {
+                question: "Was geschah in der ersten Schlacht bei Ai?",
+                answers: ["Großer Sieg", "Israel wurde besiegt", "Frieden", "Es gab keine Schlacht"],
+                correct: 1,
+                explanation: "Israel wurde wegen Achans Sünde besiegt, der vom Gebannten nahm."
+            },
+            {
+                question: "Wer sündigte und nahm vom Gebannten in Jericho?",
+                answers: ["Pinchas", "Achan", "Kaleb", "Eleasar"],
+                correct: 1,
+                explanation: "Richtig! Achan, Sohn von Karmi, nahm vom Gebannten und verursachte die Niederlage bei Ai."
+            },
+            {
+                question: "Was tat Josua, als die Sonne während der Schlacht unterging?",
+                answers: ["Ging nach Hause", "Kämpfte in der Nacht weiter", "Bat, dass Sonne und Mond stillstehen", "Ruhte sich aus"],
+                correct: 2,
+                explanation: "Richtig! Josua bat Gott, dass Sonne und Mond stillstehen sollten, und das Wunder geschah!"
+            },
+            {
+                question: "An welchem Ort standen Sonne und Mond still?",
+                answers: ["Jerusalem und Zfat", "Gibeon und Ajalon", "Jericho und Totes Meer", "Hebron und Be'er Sheva"],
+                correct: 1,
+                explanation: "Richtig! 'Sonne, stehe still in Gibeon, und Mond, im Tal Ajalon' - ein erstaunliches Wunder!"
+            },
+            {
+                question: "Wie viele Könige verbündeten sich gegen Gibeon?",
+                answers: ["Drei", "Fünf", "Sieben", "Zehn"],
+                correct: 1,
+                explanation: "Richtig! Fünf Könige der Amoriter verbündeten sich, aber Gott kämpfte für Israel."
+            },
+            {
+                question: "Welche Stadt bat Israel mit einer List um Frieden?",
+                answers: ["Jericho", "Ai", "Gibeon", "Hebron"],
+                correct: 2,
+                explanation: "Richtig! Die Leute von Gibeon taten so, als kämen sie von weit her und baten um einen Bund."
+            },
+            {
+                question: "Was war die Arbeit der Gibeoniter für Israel?",
+                answers: ["Soldaten", "Holzhauer und Wasserschöpfer", "Händler", "Lehrer"],
+                correct: 1,
+                explanation: "Richtig! Sie wurden Holzhauer und Wasserschöpfer für das Heiligtum."
+            },
+            {
+                question: "Wie alt war Josua, als er starb?",
+                answers: ["Hundertzehn Jahre", "Achtzig Jahre", "Hundertfünfzig Jahre", "Neunzig Jahre"],
+                correct: 0,
+                explanation: "Richtig! Josua, Sohn des Nun, starb im Alter von hundertzehn Jahren."
+            },
+            {
+                question: "Wie viele Stämme erhielten Land östlich des Jordan?",
+                answers: ["Einer", "Zwei", "Zweieinhalb", "Drei"],
+                correct: 2,
+                explanation: "Richtig! Ruben, Gad und der halbe Stamm Manasse erhielten Land östlich des Jordan."
+            },
+            {
+                question: "Welche Stadt war die erste Zufluchtsstadt?",
+                answers: ["Jerusalem", "Kedesch", "Zfat", "Tiberias"],
+                correct: 1,
+                explanation: "Kedesch in Galiläa war eine der sechs Zufluchtsstädte."
+            },
+            {
+                question: "Was war der Zweck der Zufluchtsstädte?",
+                answers: ["Handel", "Aufnahme für unbeabsichtigte Totschläger", "Militärfestung", "Schule"],
+                correct: 1,
+                explanation: "Richtig! Die Zufluchtsstädte waren für Menschen, die versehentlich jemanden getötet hatten, zum Schutz vor dem Bluträcher."
+            },
+            {
+                question: "Welchen Erzvätern schwor Gott das Land zu?",
+                answers: ["Nur Abraham", "Abraham, Isaak und Jakob", "Nur Jakob", "Moses"],
+                correct: 1,
+                explanation: "Richtig! Gott schwor es den drei Erzvätern - Abraham, Isaak und Jakob."
+            },
+            {
+                question: "Was sagte Josua am Ende seiner Tage zum Volk?",
+                answers: ["Wählt heute, wem ihr dienen wollt", "Geht in andere Länder", "Baut Städte", "Bereitet eine Armee vor"],
+                correct: 0,
+                explanation: "Richtig! 'Wählt heute, wem ihr dienen wollt... Ich aber und mein Haus, wir wollen dem HERRN dienen!' - Eine sehr wichtige Botschaft!"
+            }
+        ];
 
-  <!-- Save Modal -->
-  <div id="save-modal" class="modal">
-    <div class="modal-card">
-      <h3>💾 Highscore speichern</h3>
-      <p>Gib deinen Namen ein:</p>
-      <input id="player-name" type="text" maxlength="20" placeholder="z.B. Max" />
-      <div class="modal-buttons">
-        <button id="save-cancel" class="btn ghost">Abbrechen</button>
-        <button id="save-ok" class="btn">Speichern</button>
-      </div>
-    </div>
-  </div>
+        let currentQuestion = 0;
+        let score = 0;
+        let streak = 0;
+        let answeredQuestions = [];
 
-<script>
-/* Yehoshua Quiz — Colorful Kids Edition */
-const CONFIG = { timePerQuestion:12, autoDelay:1400, maxScores:10 };
+        function startGame() {
+            currentQuestion = 0;
+            score = 0;
+            streak = 0;
+            answeredQuestions = [];
+            
+            // Shuffle questions
+            questions.sort(() => Math.random() - 0.5);
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('question-screen').classList.remove('hidden');
+            
+            updateScoreboard();
+            showQuestion();
+        }
 
-const QUESTIONS = [
-  /* Sefer Yehoshua — 25 Fragen */
-  { id:'q1', text:{de:"Wer führte das Volk Israel nach Moshe?", en:"Who led Israel after Moses?"}, answers:[
-    {text:{de:"Yehoshua",en:"Joshua"}, correct:true},
-    {text:{de:"Kalev",en:"Caleb"}, correct:false},
-    {text:{de:"Aharon",en:"Aaron"}, correct:false},
-    {text:{de:"Shmuel",en:"Samuel"}, correct:false}
-  ]},
-  { id:'q2', text:{de:"Was war Yehoshua von Beruf bevor er Anführer wurde?", en:"What was Joshua's role before he became a leader?"}, answers:[
-    {text:{de:"Moshe's persönlicher Helfer",en:"Moses' personal helper"}, correct:true},
-    {text:{de:"Priester",en:"Priest"}, correct:false},
-    {text:{de:"König",en:"King"}, correct:false},
-    {text:{de:"Schäfer",en:"Shepherd"}, correct:false}
-  ]},
-  { id:'q3', text:{de:"Welche Stadt eroberte Yehoshua zuerst?", en:"Which city did Joshua conquer first?"}, answers:[
-    {text:{de:"Jericho",en:"Jericho"}, correct:true},
-    {text:{de:"Ai",en:"Ai"}, correct:false},
-    {text:{de:"Gibeon",en:"Gibeon"}, correct:false},
-    {text:{de:"Chetzron",en:"Hazor"}, correct:false}
-  ]},
-  { id:'q4', text:{de:"Was geschah mit den Mauern von Jericho?", en:"What happened to the walls of Jericho?"}, answers:[
-    {text:{de:"Sie fielen nach dem Schofarhorn-Blasen",en:"They fell after the horn was blown"}, correct:true},
-    {text:{de:"Sie wurden mit Feuer zerstört",en:"They were burned with fire"}, correct:false},
-    {text:{de:"Sie wurden gesprengt",en:"They were blown up with explosives"}, correct:false},
-    {text:{de:"Sie wurden von innen durchbrochen",en:"They were broken from inside"}, correct:false}
-  ]},
-  { id:'q5', text:{de:"Wie oft gingen die Israeliten um Jericho herum?", en:"How many times did Israel march around Jericho?"}, answers:[
-    {text:{de:"6 Tage einmal, am 7. Tag 7 Mal",en:"6 days once, 7th day 7 times"}, correct:true},
-    {text:{de:"13 Mal",en:"13 times"}, correct:false},
-    {text:{de:"7 Mal",en:"7 times"}, correct:false},
-    {text:{de:"40 Mal",en:"40 times"}, correct:false}
-  ]},
-  { id:'q6', text:{de:"Wer wurden die ersten Spione nach Kanaan?", en:"Who were the first spies sent to Canaan?"}, answers:[
-    {text:{de:"12 Männer, je einer aus jedem Stamm",en:"12 men, one from each tribe"}, correct:true},
-    {text:{de:"2 Männer",en:"2 men"}, correct:false},
-    {text:{de:"5 Männer",en:"5 men"}, correct:false},
-    {text:{de:"10 Männer",en:"10 men"}, correct:false}
-  ]},
-  { id:'q7', text:{de:"Wer versteckte die Spione in Jericho?", en:"Who hid the spies in Jericho?"}, answers:[
-    {text:{de:"Rachav, eine Prostituierte",en:"Rahab, a prostitute"}, correct:true},
-    {text:{de:"Itzak",en:"Isaac"}, correct:false},
-    {text:{de:"König von Jericho",en:"King of Jericho"}, correct:false},
-    {text:{de:"Ein Priester",en:"A priest"}, correct:false}
-  ]},
-  { id:'q8', text:{de:"Was war das Zeichen für Rachav zu überleben?", en:"What was the sign for Rahab to survive?"}, answers:[
-    {text:{de:"Ein rotes Seil am Fenster",en:"A red rope in the window"}, correct:true},
-    {text:{de:"Ein blaues Banner",en:"A blue banner"}, correct:false},
-    {text:{de:"Feuer",en:"Fire"}, correct:false},
-    {text:{de:"Ein weißer Stein",en:"A white stone"}, correct:false}
-  ]},
-  { id:'q9', text:{de:"Mit was überquerten die Israeliten den Jordan?",en:"How did Israel cross the Jordan?"}, answers:[
-    {text:{de:"Die Priester mit der Lade Gottes stellten sich voran und das Wasser trennte sich",en:"The priests with the Ark went ahead and the water split"}, correct:true},
-    {text:{de:"Mit Schiffen",en:"By ships"}, correct:false},
-    {text:{de:"Yehoshua parzte das Wasser mit seinem Stab",en:"Joshua parted the water with his staff"}, correct:false},
-    {text:{de:"Yehoshua sprang über",en:"Joshua jumped over"}, correct:false}
-  ]},
-  { id:'q10', text:{de:"Wie viele Steine wurden nach der Jordanüberquerung aufgestellt?", en:"How many stones were set up after crossing the Jordan?"}, answers:[
-    {text:{de:"12 Steine (einer pro Stamm)",en:"12 stones (one per tribe)"}, correct:true},
-    {text:{de:"7 Steine",en:"7 stones"}, correct:false},
-    {text:{de:"40 Steine",en:"40 stones"}, correct:false},
-    {text:{de:"100 Steine",en:"100 stones"}, correct:false}
-  ]},
-  { id:'q11', text:{de:"Was war das erste Fest nach Kanaan-Eintritt?", en:"What was the first holiday celebrated after entering Canaan?"}, answers:[
-    {text:{de:"Pesach (Passover)",en:"Pesach (Passover)"}, correct:true},
-    {text:{de:"Schawuot",en:"Shavuot"}, correct:false},
-    {text:{de:"Sukkot",en:"Sukkot"}, correct:false},
-    {text:{de:"Chanukka",en:"Hanukkah"}, correct:false}
-  ]},
-  { id:'q12', text:{de:"Wer war Kalev und was machte er?", en:"Who was Caleb and what did he do?"}, answers:[
-    {text:{de:"Einer der Spione, der Yehoshua unterstützte",en:"A spy who supported Joshua"}, correct:true},
-    {text:{de:"Ein König",en:"A king"}, correct:false},
-    {text:{de:"Ein Priester",en:"A priest"}, correct:false},
-    {text:{de:"Ein Feind Yehoshuas",en:"An enemy of Joshua"}, correct:false}
-  ]},
-  { id:'q13', text:{de:"Welche Stadt wollte Yehoshua wegen einer Lüge zerstören?", en:"Which city did Joshua attempt to destroy because of a lie?"}, answers:[
-    {text:{de:"Gibeon",en:"Gibeon"}, correct:true},
-    {text:{de:"Jericho",en:"Jericho"}, correct:false},
-    {text:{de:"Ai",en:"Ai"}, correct:false},
-    {text:{de:"Chetzron",en:"Hazor"}, correct:false}
-  ]},
-  { id:'q14', text:{de:"Was machten die Gibeoniten statt sich zu verstecken?", en:"What did the Gibeonites do instead of hiding?"}, answers:[
-    {text:{de:"Sie unterschrieben einen Friedensvertrag",en:"They signed a peace treaty"}, correct:true},
-    {text:{de:"Sie flohen",en:"They fled"}, correct:false},
-    {text:{de:"Sie kämpften",en:"They fought"}, correct:false},
-    {text:{de:"Sie beugten sich",en:"They bowed down"}, correct:false}
-  ]},
-  { id:'q15', text:{de:"Was war der Name von Yehoshuas Vater?", en:"What was the name of Joshua's father?"}, answers:[
-    {text:{de:"Nun",en:"Nun"}, correct:true},
-    {text:{de:"Kalev",en:"Caleb"}, correct:false},
-    {text:{de:"Ephraim",en:"Ephraim"}, correct:false},
-    {text:{de:"Menasche",en:"Manasseh"}, correct:false}
-  ]},
-  { id:'q16', text:{de:"Welcher Stamm erhielt das Land östlich des Jordan?", en:"Which tribe received land east of the Jordan?"}, answers:[
-    {text:{de:"Reuven, Gad und Menasche (teilweise)",en:"Reuben, Gad and Manasseh (partially)"}, correct:true},
-    {text:{de:"Juda",en:"Judah"}, correct:false},
-    {text:{de:"Benjamin",en:"Benjamin"}, correct:false},
-    {text:{de:"Ephraim",en:"Ephraim"}, correct:false}
-  ]},
-  { id:'q17', text:{de:"Wie lange dauerte die Eroberung Kanaans?", en:"How long did it take to conquer Canaan?"}, answers:[
-    {text:{de:"Etwa 7 Jahre",en:"About 7 years"}, correct:true},
-    {text:{de:"Etwa 40 Jahre",en:"About 40 years"}, correct:false},
-    {text:{de:"Etwa 1 Jahr",en:"About 1 year"}, correct:false},
-    {text:{de:"Etwa 20 Jahre",en:"About 20 years"}, correct:false}
-  ]},
-  { id:'q18', text:{de:"Welche Schlacht fand bei Bet-Choron statt?", en:"What battle occurred at Beth-Horon?"}, answers:[
-    {text:{de:"Yehoshua besiegte die Könige Kanaans",en:"Joshua defeated the kings of Canaan"}, correct:true},
-    {text:{de:"David besiegte Philister",en:"David defeated Philistines"}, correct:false},
-    {text:{de:"Moshe besiegte Amalek",en:"Moses defeated Amalek"}, correct:false},
-    {text:{de:"Ein Stammeskrieg",en:"A tribal war"}, correct:false}
-  ]},
-  { id:'q19', text:{de:"Was befahl Yehoshua den Soldaten?", en:"What did Joshua command his soldiers?"}, answers:[
-    {text:{de:"Die Bevölkerung Kanaans sollte nicht ausgerottet werden",en:"The people of Canaan should not be wiped out"}, correct:false},
-    {text:{de:"Sie sollten die Heiligstätten zerstören",en:"They should destroy the sanctuaries"}, correct:true},
-    {text:{de:"Sie sollten die Götzen entfernen",en:"They should remove the idols"}, correct:false},
-    {text:{de:"Sie sollten die Truppen trainieren",en:"They should train the troops"}, correct:false}
-  ]},
-  { id:'q20', text:{de:"Wer war der Priester unter Yehoshua?", en:"Who was the priest under Joshua?"}, answers:[
-    {text:{de:"Elazar, Sohn von Aharon",en:"Eleazar, son of Aaron"}, correct:true},
-    {text:{de:"Aharon",en:"Aaron"}, correct:false},
-    {text:{de:"Pinchas",en:"Phinehas"}, correct:false},
-    {text:{de:"Ithamar",en:"Ithamar"}, correct:false}
-  ]},
-  { id:'q21', text:{de:"Welche Zeichen erhielt Yehoshua von Gott?", en:"What signs did Joshua receive from God?"}, answers:[
-    {text:{de:"Die Lade des Bundes und Träume",en:"The Ark of the Covenant and dreams"}, correct:true},
-    {text:{de:"Nur Träume",en:"Only dreams"}, correct:false},
-    {text:{de:"Nur die Lade",en:"Only the Ark"}, correct:false},
-    {text:{de:"Feuer und Rauch",en:"Fire and smoke"}, correct:false}
-  ]},
-  { id:'q22', text:{de:"Wie endete das Buch Yehoshua?", en:"How did the Book of Joshua end?"}, answers:[
-    {text:{de:"Mit Yehoshuas Tod und Abschiedsrede",en:"With Joshua's death and farewell speech"}, correct:true},
-    {text:{de:"Mit einer Schlacht",en:"With a battle"}, correct:false},
-    {text:{de:"Mit einer neuen Eroberung",en:"With a new conquest"}, correct:false},
-    {text:{de:"Mit einem Fest",en:"With a holiday"}, correct:false}
-  ]},
-  { id:'q23', text:{de:"Welches Alter hatte Yehoshua beim Einzug nach Kanaan?", en:"How old was Joshua when he entered Canaan?"}, answers:[
-    {text:{de:"81 Jahre",en:"81 years"}, correct:false},
-    {text:{de:"Der Text gibt kein genaues Alter an",en:"The text doesn't specify"}, correct:true},
-    {text:{de:"60 Jahre",en:"60 years"}, correct:false},
-    {text:{de:"100 Jahre",en:"100 years"}, correct:false}
-  ]},
-  { id:'q24', text:{de:"Wie hieß die Schlucht, wo die Sonne stehen blieb?", en:"In which valley did the sun stand still?"}, answers:[
-    {text:{de:"Tal von Ajalon",en:"Valley of Aijalon"}, correct:true},
-    {text:{de:"Tal von Sichern",en:"Valley of Shechem"}, correct:false},
-    {text:{de:"Tal von Hebron",en:"Valley of Hebron"}, correct:false},
-    {text:{de:"Tal von Jericho",en:"Valley of Jericho"}, correct:false}
-  ]},
-  { id:'q25', text:{de:"Wie viele Jahre lebte Yehoshua nach der Eroberung?", en:"How many years did Joshua live after the conquest?"}, answers:[
-    {text:{de:"Mindestens 20 Jahre",en:"At least 20 yea
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResults();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.question;
+            
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(index);
+                answersDiv.appendChild(btn);
+            });
+            
+            document.getElementById('feedback').classList.remove('show', 'correct', 'wrong');
+            document.getElementById('next-btn').classList.add('hidden');
+            
+            updateProgress();
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestion];
+            const answerBtns = document.querySelectorAll('.answer-btn');
+            const feedback = document.getElementById('feedback');
+            
+            // Disable all buttons
+            answerBtns.forEach(btn => btn.classList.add('disabled'));
+            
+            const isCorrect = selectedIndex === question.correct;
+            
+            if (isCorrect) {
+                answerBtns[selectedIndex].classList.add('correct');
+                feedback.className = 'feedback show correct';
+                feedback.textContent = '🎉 ' + question.explanation;
+                score += 10;
+                streak++;
+                
+                // Bonus for streak
+                if (streak >= 3) {
+                    score += 5;
+                    feedback.textContent += ` 🔥 Serien-Bonus: +5 Punkte!`;
+                }
+            } else {
+                answerBtns[selectedIndex].classList.add('wrong');
+                answerBtns[question.correct].classList.add('correct');
+                feedback.className = 'feedback show wrong';
+                feedback.textContent = '❌ Nicht richtig. ' + question.explanation;
+                streak = 0;
+            }
+            
+            updateScoreboard();
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function updateScoreboard() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('question-number').textContent = `${currentQuestion + 1}/${questions.length}`;
+            document.getElementById('streak').textContent = streak + '🔥';
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            const percentage = (score / (questions.length * 10)) * 100;
+            document.getElementById('final-score').textContent = `${score} Punkte`;
+            
+            let emoji, message;
+            if (percentage >= 90) {
+                emoji = '🏆👑🌟';
+                message = 'Fantastisch! Du bist ein echter Josua-Experte!';
+            } else if (percentage >= 70) {
+                emoji = '🎖️⭐😊';
+                message = 'Super gemacht! Ausgezeichnetes Wissen über das Buch Josua!';
+            } else if (percentage >= 50) {
+                emoji = '👍📚😀';
+                message = 'Gut gemacht! Lerne weiter und du wirst noch besser!';
+            } else {
+                emoji = '💪📖🙂';
+                message = 'Guter Start! Lies die Geschichte nochmal und versuche es erneut!';
+            }
+            
+            document.getElementById('result-emoji').textContent = emoji;
+            document.getElementById('result-message').textContent = message;
+        }
+
+        // Initialize
+        updateScoreboard();
+    </script>
+</body>
+</html>
